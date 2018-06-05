@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Postkit Demo | Todo List</title>
+        <link rel="stylesheet" href="./app.css">
+    </head>
+    <body>
+        <main class="main">
+            <div class="container">
+                <div class="list-wrap">
+                    <h1 class="list-title">List Items</h1>
+                    <ul class="list-items js-list-items"></ul>
+                    <form method="POST" action="" class="form js-form">
+                        <input type="text" name="name" placeholder="Name" class="text-input js-input">
+                    </form>
+                </div>
+            </div>
+        </main>
+    </body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script id="list-item-template" type="text/x-handlebars-template">
+        <li class="list-item js-list-item" data-id="{{ id }}" data-name="{{ name }}">
+            <span class="list-item-title">{{ name }}</span>
+            {{#if complete}}
+                <input type="checkbox" class="checkbox js-checkbox" checked="checked">
+            {{else}}
+                <input type="checkbox" class="checkbox js-checkbox">
+            {{/if}}
+        </li>
+    </script>
+    <script type="text/javascript">
+        var username = '';
+        var endpointSlug = '';
+        var apiToken = 'EpIuVsInBXVbcF43dJAhWFvHn9MC1cAeHaWmuuXJ';
+
+        var listItems = [];
+        var listItemSource = $('#list-item-template').html();
+        var listItemTemplate = Handlebars.compile(listItemSource);
+
+        $(document).ready(function(e) {
+            $.ajax({
+                method: 'GET',
+                url: 'https://api.postkit.io/' + username + '/' + endpointSlug,
+                data: {
+                    token: apiToken
+                },
+                success: function(response) {
+                    for(var i=0;i<response.data.length;i++) {
+                        var listItem = response.data[i];
+                        if(listItem.name.length > 0) {
+                            $('.js-list-items').append(listItemTemplate(listItem));
+                        }
+                    }
+                }
+            });
+
+            $('.js-form').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: 'https://api.postkit.io/' + username + '/' + endpointSlug,
+                    data: {
+                        name: $('input[name="name"]').val(),
+                        complete: false,
+                        date: new Date().toJSON().toString(),
+                        token: apiToken
+                    },
+                    method: 'POST',
+                    success: function(response) {
+                        var listItem = response.data;
+                        $('.js-list-items').append(listItemTemplate(listItem));
+                        $('.js-input').val('');
+                    }
+                });
+            });
+
+            $('body').on('change', '.js-checkbox', function(e) {
+                var $parent = $(this).parents('.js-list-item');
+                var id = $parent.attr('data-id');
+                var name = $parent.attr('data-name');
+                var complete = $(this).is(':checked');
+                console.log([id, name, complete]);
+                $.ajax({
+                    url: 'https://api.postkit.io/' + username + '/' + endpointSlug + '/' + id,
+                    data: {
+                        name: name,
+                        complete: complete,
+                        date: new Date().toJSON().toString(),
+                        token: apiToken
+                    },
+                    type: 'PUT',
+                    crossOrigin: true,
+                    success: function(response) {
+                        var listItem = response.data;
+                    }
+                });
+            });
+        });
+    </script>
+</html>

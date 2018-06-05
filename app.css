@@ -1,0 +1,48 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    font-size: 16px;
+    font-family: Helvetica, Arial, sans-serif;
+    background-color: #dddfe0;
+}
+
+.container {
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.list-wrap {
+    padding: 30px 20px;
+}
+
+.list-title {
+    font-size: 30px;
+}
+
+.list-items {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.list-item {
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #FFFFFF;
+    border-radius: 4px;
+}
+
+.checkbox {
+    float: right;
+}
+
+.text-input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 2px;
+    font-size: 16px;
+}
